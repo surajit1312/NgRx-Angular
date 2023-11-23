@@ -2,6 +2,28 @@
 
 This project is to demonstrate the flow of state management using NgRx(Redux) and Angular v16.
 
+```
+npx @angular/cli@16.2.10 new NgRx-Angular
+
+```
+
+# Install NgRx dependencies
+
+```
+npm install @ngrx/store @ngrx/effects @ngrx/entity @ngrx/store-devtools --save
+
+```
+
+## or with specific version as
+
+```
+npm install @ngrx/store@16.2.0 --save
+npm install @ngrx/effects@16.2.0 --save 
+npm install @ngrx/entity@16.2.0 --save
+npm install @ngrx/store-devtools@16.2.0 --save
+
+```
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
