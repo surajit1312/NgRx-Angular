@@ -3,6 +3,7 @@ import { Todo } from '../../app/models/todo.model';
 import {
   addTodoAction,
   deleteTodoAction,
+  loadTodoAction,
   toggleTodoAction,
 } from '../actions/todo.actions';
 
@@ -11,18 +12,15 @@ export interface TodoState {
 }
 
 export const initialState: TodoState = {
-  todos: [
-    {
-      id: '1',
-      title: 'Todo 1',
-      completed: false,
-      userId: 1,
-    },
-  ],
+  todos: [],
 };
 
 export const TodosReducer = createReducer(
   initialState,
+  on(loadTodoAction, (state, { todos }) => ({
+    ...state,
+    todos,
+  })),
   on(addTodoAction, (state, { todo }) => ({
     ...state,
     todos: [...state.todos, todo],

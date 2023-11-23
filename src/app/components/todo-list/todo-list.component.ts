@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Todo } from '../../models/todo.model';
 import { Store } from '@ngrx/store';
 import {
   addTodoAction,
   deleteTodoAction,
+  loadTodoAction,
   toggleTodoAction,
 } from 'src/store/actions/todo.actions';
 
@@ -13,7 +14,7 @@ import {
   templateUrl: './todo-list.component.html',
   styleUrls: ['./todo-list.component.scss'],
 })
-export class TodoListComponent {
+export class TodoListComponent implements OnInit {
   newTodoTitle: string = '';
   todos$!: Todo[];
 
@@ -21,6 +22,10 @@ export class TodoListComponent {
     store.select('todosReducer').subscribe((todosState: { todos: Todo[] }) => {
       this.todos$ = todosState.todos;
     });
+  }
+
+  ngOnInit(): void {
+    this.store.dispatch(loadTodoAction({ todos: this.todos$ }));
   }
 
   addTodo(): void {

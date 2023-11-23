@@ -234,6 +234,91 @@ export class TodoService {
 
 ```
 
+### We need to update our 'todo.actions.ts' to have an action like below to load Todos:
+
+```
+export const loadTodoAction = createAction(
+  '[Todos] Load Todo',
+  props<{ todos: Todo[] }>(),
+);
+
+```
+
+### Now let's create an Effect file - 'todo.effect.ts' to handle the side-effects whenever an API (stated above) is called and response is resolved
+
+```
+import { Injectable } from '@angular/core';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { TodoService } from 'src/app/services/todo.service';
+import * as TodoActions from '../actions/todo.actions';
+import { exhaustMap, map } from 'rxjs';
+import { Todo } from 'src/app/models/todo.model';
+
+@Injectable()
+export class TodoEffects {
+  constructor(
+    private actions$: Actions,
+    private todoService: TodoService,
+  ) {}
+
+  loadTodosEffect = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TodoActions.loadTodoAction),
+      exhaustMap(() => {
+        return this.todoService.getTodos().pipe(
+          map((todos: Todo[]) => {
+            return TodoActions.loadTodoAction({ todos });
+          }),
+        );
+      }),
+    );
+  });
+}
+
+```
+
+### Now we need to update - 'todo.reducer.ts' to have include the action named 'loadTodoAction'
+
+```
+on(loadTodoAction, (state, { todos }) => ({
+    ...state,
+    todos,
+})),
+
+```
+
+### Now we need to update the 'todo-list.component.ts' to have OnInit hook to load the loadTodo action as shown below:
+
+```
+ngOnInit(): void {
+    this.store.dispatch(loadTodoAction({ todos: this.todos$ }));
+}
+
+```
+
+### Finally we need to update - 'app.module.ts' to import EffectsModule and add created effects as shown below:
+
+```
+@NgModule({
+  declarations: [AppComponent, TodoListComponent],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    HttpClientModule,
+    FormsModule,
+    StoreModule.forRoot({ todosReducer: TodosReducer }),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25,
+    }),
+    EffectsModule.forRoot([TodoEffects]),
+  ],
+  providers: [],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+
+```
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
