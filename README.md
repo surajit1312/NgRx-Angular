@@ -103,6 +103,26 @@ export const todosReducer = createReducer(
 
 ```
 
+### Add required Modules in 'app.module.ts' as shown below:
+
+```
+@NgModule({
+  declarations: [AppComponent],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule,
+    StoreModule.forRoot({ todosReducer: TodosReducer }),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25,
+    }),
+  ],
+  providers: [],
+  bootstrap: [AppComponent],
+})
+
+```
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
