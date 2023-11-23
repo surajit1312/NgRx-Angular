@@ -20,9 +20,86 @@ npm install @ngrx/store @ngrx/effects @ngrx/entity @ngrx/store-devtools --save
 
 ```
 npm install @ngrx/store@16.2.0 --save
-npm install @ngrx/effects@16.2.0 --save 
+npm install @ngrx/effects@16.2.0 --save
 npm install @ngrx/entity@16.2.0 --save
 npm install @ngrx/store-devtools@16.2.0 --save
+
+```
+
+## NgRx changes
+
+### Create a Model file - 'todo.model.ts'
+
+```
+export interface Todo {
+  id: number;
+  title: string;
+  completed: boolean;
+  userId: number;
+}
+
+```
+
+### Create an Action file - 'todo.actions.ts' for todo for create(add), toggle(update) and delete
+
+```
+import { createAction, props } from '@ngrx/store';
+import { Todo } from 'src/app/models/todo.model';
+
+export const addTodo = createAction(
+  '[Todos] Add Todo',
+  props<{ todo: Todo }>()
+);
+
+export const toggleTodo = createAction(
+  '[Todos] Toggle Todo',
+  props<{ id: string }>()
+);
+
+export const deleteTodo = createAction(
+  '[Todos] Delete Todo',
+  props<{ id: string }>()
+);
+
+```
+
+### Create a Reducer file - 'todo.reducer.ts' for each actions as stated above
+
+```
+import { createReducer, on } from '@ngrx/store';
+import { Todo } from '../../app/models/todo.model';
+import { addTodo, deleteTodo, toggleTodo } from '../actions/todo.actions';
+
+export interface TodoState {
+  todos: Todo[];
+}
+
+export const initialState: TodoState = {
+  todos: [],
+};
+
+export const todosReducer = createReducer(
+  initialState,
+  on(addTodo, (state, { todo }) => ({
+    ...state,
+    todos: [...state.todos, todo],
+  })),
+  on(deleteTodo, (state, { id }) => ({
+    ...state,
+    todos: state.todos.filter((todoItem: Todo) => todoItem.id !== id),
+  })),
+  on(toggleTodo, (state, { id }) => ({
+    ...state,
+    todos: state.todos.map((todoItem: Todo) =>
+      todoItem.id == id
+        ? {
+            ...todoItem,
+            completed: !todoItem.completed,
+          }
+        : todoItem
+    ),
+  }))
+);
 
 ```
 
