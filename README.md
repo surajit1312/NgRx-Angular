@@ -2,19 +2,21 @@
 
 This project is to demonstrate the flow of state management using NgRx(Redux) and Angular v16.
 
+## Create a new angular project with specifix version v16.2.10
+
 ```
 npx @angular/cli@16.2.10 new NgRx-Angular
 
 ```
 
-# Install NgRx dependencies
+## Install NgRx dependencies
 
 ```
 npm install @ngrx/store @ngrx/effects @ngrx/entity @ngrx/store-devtools --save
 
 ```
 
-## or with specific version as
+### or with specific version as
 
 ```
 npm install @ngrx/store@16.2.0 --save
