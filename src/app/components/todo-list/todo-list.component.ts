@@ -1,6 +1,12 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Todo } from 'src/app/models/todo.model';
+import { Todo } from '../../models/todo.model';
+import { Store } from '@ngrx/store';
+import {
+  addTodoAction,
+  deleteTodoAction,
+  toggleTodoAction,
+} from 'src/store/actions/todo.actions';
 
 @Component({
   selector: 'app-todo-list',
@@ -9,11 +15,33 @@ import { Todo } from 'src/app/models/todo.model';
 })
 export class TodoListComponent {
   newTodoTitle: string = '';
-  todos$!: Observable<Todo[]>;
+  todos$!: Todo[];
 
-  addTodo(): void {}
+  constructor(private store: Store<{ todosReducer: { todos: Todo[] } }>) {
+    store.select('todosReducer').subscribe((todosState: { todos: Todo[] }) => {
+      this.todos$ = todosState.todos;
+    });
+  }
 
-  toggleTodo(id: string): void {}
+  addTodo(): void {
+    if (this.newTodoTitle.trim() === '') {
+      return;
+    }
+    const todo: Todo = {
+      id: Date.now().toString(),
+      title: this.newTodoTitle,
+      completed: false,
+      userId: 1,
+    };
+    this.store.dispatch(addTodoAction({ todo }));
+    this.newTodoTitle = '';
+  }
 
-  removeTodo(id: string): void {}
+  toggleTodo(id: string): void {
+    this.store.dispatch(toggleTodoAction({ id }));
+  }
+
+  removeTodo(id: string): void {
+    this.store.dispatch(deleteTodoAction({ id }));
+  }
 }

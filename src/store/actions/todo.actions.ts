@@ -1,17 +1,17 @@
 import { createAction, props } from '@ngrx/store';
 import { Todo } from 'src/app/models/todo.model';
 
-export const addTodo = createAction(
+export const addTodoAction = createAction(
   '[Todos] Add Todo',
   props<{ todo: Todo }>(),
 );
 
-export const toggleTodo = createAction(
+export const toggleTodoAction = createAction(
   '[Todos] Toggle Todo',
   props<{ id: string }>(),
 );
 
-export const deleteTodo = createAction(
+export const deleteTodoAction = createAction(
   '[Todos] Delete Todo',
   props<{ id: string }>(),
 );

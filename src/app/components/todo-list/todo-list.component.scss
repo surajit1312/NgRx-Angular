@@ -30,6 +30,9 @@
 
 .todo-list input[type="checkbox"] {
   margin-right: 10px;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row;
 }
 
 .todo-list span {
@@ -47,4 +50,21 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  display: flex;
+  justify-content: flex-end;
+}
+
+ul.todo-list {
+  list-style-type: none;
+  li {
+    display: flex;
+    flex-flow: row wrap;
+    margin: 10px 0;
+
+    span {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+    }
+  }
 }

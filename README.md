@@ -46,19 +46,19 @@ export interface Todo {
 import { createAction, props } from '@ngrx/store';
 import { Todo } from 'src/app/models/todo.model';
 
-export const addTodo = createAction(
+export const addTodoAction = createAction(
   '[Todos] Add Todo',
-  props<{ todo: Todo }>()
+  props<{ todo: Todo }>(),
 );
 
-export const toggleTodo = createAction(
+export const toggleTodoAction = createAction(
   '[Todos] Toggle Todo',
-  props<{ id: string }>()
+  props<{ id: string }>(),
 );
 
-export const deleteTodo = createAction(
+export const deleteTodoAction = createAction(
   '[Todos] Delete Todo',
-  props<{ id: string }>()
+  props<{ id: string }>(),
 );
 
 ```
@@ -68,27 +68,34 @@ export const deleteTodo = createAction(
 ```
 import { createReducer, on } from '@ngrx/store';
 import { Todo } from '../../app/models/todo.model';
-import { addTodo, deleteTodo, toggleTodo } from '../actions/todo.actions';
+import { addTodoAction, deleteTodoAction, toggleTodoAction } from '../actions/todo.actions';
 
 export interface TodoState {
   todos: Todo[];
 }
 
 export const initialState: TodoState = {
-  todos: [],
+  todos: [
+    {
+      id: '1',
+      title: 'Todo 1',
+      completed: false,
+      userId: 1,
+    },
+  ],
 };
 
-export const todosReducer = createReducer(
+export const TodosReducer = createReducer(
   initialState,
-  on(addTodo, (state, { todo }) => ({
+  on(addTodoAction, (state, { todo }) => ({
     ...state,
     todos: [...state.todos, todo],
   })),
-  on(deleteTodo, (state, { id }) => ({
+  on(deleteTodoAction, (state, { id }) => ({
     ...state,
     todos: state.todos.filter((todoItem: Todo) => todoItem.id !== id),
   })),
-  on(toggleTodo, (state, { id }) => ({
+  on(toggleTodoAction, (state, { id }) => ({
     ...state,
     todos: state.todos.map((todoItem: Todo) =>
       todoItem.id == id
@@ -96,9 +103,9 @@ export const todosReducer = createReducer(
             ...todoItem,
             completed: !todoItem.completed,
           }
-        : todoItem
+        : todoItem,
     ),
-  }))
+  })),
 );
 
 ```
@@ -120,6 +127,75 @@ export const todosReducer = createReducer(
   providers: [],
   bootstrap: [AppComponent],
 })
+
+```
+
+### The Todo-List Component looks like below:
+
+```
+export class TodoListComponent {
+  newTodoTitle: string = '';
+  todos$!: Todo[];
+
+  constructor(private store: Store<{ todosReducer: { todos: Todo[] } }>) {
+    store.select('todosReducer').subscribe((todosState: { todos: Todo[] }) => {
+      this.todos$ = todosState.todos;
+    });
+  }
+
+  addTodo(): void {
+    if (this.newTodoTitle.trim() === '') {
+      return;
+    }
+    const todo: Todo = {
+      id: Date.now().toString(),
+      title: this.newTodoTitle,
+      completed: false,
+      userId: 1,
+    };
+    this.store.dispatch(addTodoAction({ todo }));
+    this.newTodoTitle = '';
+  }
+
+  toggleTodo(id: string): void {
+    this.store.dispatch(toggleTodoAction({ id }));
+  }
+
+  removeTodo(id: string): void {
+    this.store.dispatch(deleteTodoAction({ id }));
+  }
+}
+
+```
+
+### Todo-List Component Template looks like:
+
+```
+<div class="todo-container">
+  <h2>Todo List</h2>
+  <form class="todo-form" (ngSubmit)="addTodo()">
+    <input
+      type="text"
+      name="newTodoTitle"
+      placeholder="Add a Todo"
+      [(ngModel)]="newTodoTitle"
+    />
+    <button type="submit">Add</button>
+  </form>
+  <ul class="todo-list">
+    <li *ngFor="let todo of todos$">
+      <input
+        type="checkbox"
+        [checked]="todo.completed"
+        (change)="toggleTodo(todo.id)"
+      />
+      <span [ngClass]="{ completed: todo.completed }">{{ todo?.title }}</span>
+      <button (click)="removeTodo(todo.id)" class="remove-button">
+        Remove
+      </button>
+    </li>
+  </ul>
+</div>
 
 ```
 
